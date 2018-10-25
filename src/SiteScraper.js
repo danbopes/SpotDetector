@@ -43,12 +43,12 @@ class SiteScraper {
         return {
             comments,
             lastDate: new Date(res.items[res.items.length - 1].creation_date * 1000),
+            quotaRemaining: res.quota_remaining,
+            quotaMax: res.quota_max,
         };
     }
 
     async scrape() {
-        this.log('Scraping site.');
-
         const allComments = [];
         let page = 0;
         let lastCommentDate = null;
@@ -56,7 +56,9 @@ class SiteScraper {
         while (true) {
             page += 1;
 
-            const { comments, lastDate } = await this._scrapePage(page);
+            const { comments, lastDate, quotaRemaining, quotaMax } = await this._scrapePage(page);
+
+            this.log(`Page ${page} complete. Quota: ${quotaRemaining}/${quotaMax}`);
 
             allComments.push(...comments);
             lastCommentDate = lastDate;
